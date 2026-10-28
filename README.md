@@ -15,6 +15,9 @@ Files from this turn   report.md 📂   model.py 📂   chart.png 📂
 Each chip's name opens the file in the Harness right pane (the host's own
 `openFile` action); the 📂 icon reveals it in the system file manager.
 
+Current release: [v0.1.1](https://github.com/danchaw/dsh-reveal-in-folder/releases/tag/v0.1.1)
+· changes in [CHANGELOG.md](CHANGELOG.md).
+
 ## Why a plugin?
 
 Harness already knows how to reveal a file: the official deliverables card exposes
@@ -28,17 +31,18 @@ a reveal button on every one of them.
 ## How it works
 
 - **Client-only bundle.** The host half (`lib/index.js`) is an empty `apply()` on
-  purpose — see "Security" below.
+  purpose — see "Security notes" below.
 - **Where the list comes from**: a Conversation `Definition`
   (`reveal-in-folder-files`) registered on `ctx.uiConversation.events` folds
   `turn/start` / `tool/call` / `tool/result` events into a per-turn file list, the
   same framework channel the official deliverables card uses. Turn membership is
-  owned by the engine; the plugin never scrapes DOM of another plugin.
+  owned by the engine; the plugin never scrapes the DOM of another plugin.
 - **What counts as produced**: successful `write`, `edit`, mutating
-  `str_replace_editor`, and `apply_patch` calls, using the absolute path the Host
-  records in the tool result metadata (falling back to the argument path, resolved
-  against the session workspace). Reads, failed calls, and unsupported tools
-  contribute nothing.
+  `str_replace_editor`, and `apply_patch` calls. The call's **arguments** must name a
+  file path; the absolute path recorded by the Host in the tool-result metadata then
+  wins over the argument path (relative paths resolve against the session
+  workspace). Reads, greps, shell commands, and failed calls contribute nothing —
+  result metadata alone is never treated as production (0.1.1).
 - **Where it renders**: slot `conversation.chat.turnTail`, entry
   `dsh-reveal-in-folder.turn-tail`, `order: 5` (just after the deliverables card).
 - **What the click does**: `ctx.remote.session.openWorkspacePath({ path, action:
@@ -50,34 +54,69 @@ a reveal button on every one of them.
   (or a Linux host without `DISPLAY`) shows no dangling icons.
 - Paths that the Host cannot verify answer with an error; the button turns red in
   place instead of failing silently.
+- **Zero dependencies.** No React of its own (`require('react')` uses the browser's
+  copy), no build step, no network call.
 
 ## Install
 
-Requires the DSH Web UI (verified on `0.2.1-rc.3`) and a Harness Host running on the
-same desktop as your browser.
+Requirements: the DSH Web UI or desktop app (developed and verified on `0.2.1-rc.3`),
+and a Harness Host running on the same desktop as your browser — the point is to open
+a local file manager.
+
+Install into **the profile your Harness actually boots**, which is the one thing that
+usually goes wrong:
+
+| You run | Profile to install into |
+| --- | --- |
+| the **desktop app** (`DeepSeek Harness.exe`) | `--profile desktop` |
+| the **web launcher** (`dsh --profile web`, opened in a browser) | `--profile web` |
 
 ```sh
-dsh plugin --profile web add "github:danchaw/dsh-reveal-in-folder#main"
+# desktop app
+dsh plugin --profile desktop add "github:danchaw/dsh-reveal-in-folder"
+
+# web UI
+dsh plugin --profile web add "github:danchaw/dsh-reveal-in-folder"
 ```
 
-…or install it from the **Plugins** page in the Web UI. Restart Harness (reload the
-page) afterwards: a bundle is picked up when the composition is rebuilt.
+Pin a release instead of the moving `main` branch by appending `#v0.1.1`.
+
+You can also install from the **Plugins** page in the UI. A brand-new bundle is picked
+up live — the renderer fetches it as a new module revision, no restart needed.
+*Replacing* a version that is already loaded needs an app restart (or a page reload)
+before the new module generation is used.
 
 Install from a local checkout while developing:
 
 ```sh
-dsh plugin --profile web add "C:\Users\you\Documents\DSH\dsh-reveal-in-folder"
+dsh plugin --profile desktop add "C:\Users\you\Documents\DSH\dsh-reveal-in-folder"
 ```
 
 Remove it:
 
 ```sh
-dsh plugin --profile web remove dsh-reveal-in-folder
+dsh plugin --profile desktop remove dsh-reveal-in-folder
 ```
 
 ## Configuration
 
 None. The plugin adds no tool, no prompt, no setting, and no network endpoint.
+
+## Troubleshooting
+
+- **No icon anywhere, although the install succeeded.** Almost always a profile
+  mismatch — the plugin is installed in a profile that the running app does not boot.
+  Check with `dsh plugin --profile desktop why dsh-reveal-in-folder`, and remember the
+  desktop app ignores `--profile web`.
+- **No icon on this particular turn.** Expected: the row only appears on turns where
+  the assistant actually wrote or edited a file. Read-only turns have none, and files
+  a shell command created appear on the official deliverables card instead (that card
+  already has its own reveal button).
+- **The row is there but the icon does nothing / turns red.** The Host rejected the
+  path — it only reveals paths that resolve inside a workspace it verified as local to
+  this desktop. Remote or container-side workspaces are refused by design.
+- **Nothing at all on a headless host.** Expected: with no file manager available the
+  whole row stays hidden.
 
 ## Repository layout
 
@@ -88,13 +127,14 @@ None. The plugin adds no tool, no prompt, no setting, and no network endpoint.
 | `cordis.patch.yml` | The composition row Plugin Manager inserts on install. |
 | `locale/en.json`, `locale/zh.json` | Bundle display metadata for the plugins page. |
 | `icon.svg` | Bundle icon (original artwork, MIT). |
+| `CHANGELOG.md` | Release notes. |
 | `test/` | `node --test` suite: manifest checks plus a headless runtime smoke (a hook-backed renderer runs the event fold, the capability gate, and a click). |
 
 ## Security notes
 
 The plugin ships **no HTTP route and spawns no process**. Revealing a folder is a
-Host-side capability that already exists and is already guarded (it verifies that
-the path resolves inside a desktop-verified workspace). A second plugin-local
+Host-side capability that already exists and is already guarded (it verifies that the
+path resolves inside a desktop-verified workspace). A second plugin-local
 implementation would double the attack surface for the same result, so this bundle is
 UI-only and calls the official entry point.
 
@@ -104,8 +144,10 @@ UI-only and calls the official entry point.
 npm test
 ```
 
-No dependencies, no build step — `lib/client.js` is the plain browser module DSH
-loads (`window.__ModuleLoader__`).
+No dependencies, no build step — `lib/client.js` is the plain browser module DSH loads
+(`window.__ModuleLoader__`). The test suite drives that module with a stub `ctx` and a
+hook-backed renderer, so the fold logic and the click path are covered without a
+browser.
 
 ## Known limits
 
@@ -113,6 +155,8 @@ loads (`window.__ModuleLoader__`).
   listed. A file created by a shell command shows up on the deliverables card only
   after the model `present`s it — and that card already has its own reveal button.
 - At most 24 chips per turn; the rest collapse into a "{count} more files" note.
+- The row is per turn: files from earlier turns are not re-listed. Scroll to the turn
+  that produced them, or use the deliverables card.
 
 ## License
 
