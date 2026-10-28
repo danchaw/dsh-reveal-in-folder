@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "reveal-in-folder",
+    "description": "Adds a folder icon beside each file produced in a turn; clicking it opens the containing folder in the system file manager."
+  }
+}

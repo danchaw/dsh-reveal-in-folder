@@ -1,0 +1,12 @@
+# Mount dsh-reveal-in-folder into a DSH composition.
+#
+# The official bundle flow adds this row for you — install the package with
+# `dsh plugin --profile web add <source>` (or the in-app Plugin Manager page),
+# and Plugin Manager writes it into the profile's `cordis.patch.yml`. Committing
+# this file keeps the bundle declarative: a reader sees exactly which id the
+# plugin occupies, and a manual install has a ready-made row to copy.
+#
+# `id` is the position in the composition tree; `name` is the installed package.
+- insert:
+    - id: reveal-in-folder
+      name: dsh-reveal-in-folder

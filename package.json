@@ -1,0 +1,63 @@
+{
+  "name": "dsh-reveal-in-folder",
+  "version": "0.1.0",
+  "description": "DSH plugin: a folder icon beside every file produced in a turn, which opens that file's containing folder in the system file manager",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "cordis",
+    "plugin",
+    "reveal-in-folder",
+    "open-folder",
+    "file-manager",
+    "deliverables"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "main": "lib/index.js",
+  "icon": "./icon.svg",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danchaw/dsh-reveal-in-folder.git"
+  },
+  "homepage": "https://github.com/danchaw/dsh-reveal-in-folder#readme",
+  "bugs": {
+    "url": "https://github.com/danchaw/dsh-reveal-in-folder/issues"
+  },
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "README.zh.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ]
+    }
+  }
+}
