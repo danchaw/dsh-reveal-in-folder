@@ -249,8 +249,13 @@ test('the fold records successful mutations and ignores everything else', async 
     'patch targets are deduplicated',
   )
 
+  // Real Harness results carry the opened path in `meta.path` even for read-only
+  // tools; a earlier fixture omitted it and so hid a bug that advertised every
+  // viewed file as a produced one.
   step({ type: 'tool/call', seq: 8, data: { turn: 1, callId: 'c4', name: 'read', arguments: JSON.stringify({ file_path: 'notes.md' }) } })
-  assert.equal(step({ type: 'tool/result', seq: 9, surfaceOp: 'append', data: { turn: 1, message: { source: { callId: 'c4' } } } }).length, 3, 'reads contribute nothing')
+  assert.equal(step({ type: 'tool/result', seq: 9, surfaceOp: 'append', data: { turn: 1, message: { source: { callId: 'c4' } }, meta: { path: 'C:\\workspace\\viewed.md' } } }).length, 3, 'reads contribute nothing even when their result records a path')
+  step({ type: 'tool/call', seq: 10, data: { turn: 1, callId: 'c5', name: 'pwsh', arguments: JSON.stringify({ command: 'Get-ChildItem' }) } })
+  assert.equal(step({ type: 'tool/result', seq: 11, surfaceOp: 'append', data: { turn: 1, message: { source: { callId: 'c5' } }, meta: { path: 'C:\\workspace\\other.md' } } }).length, 3, 'a shell result never becomes a produced file')
 
   const located = fold.buildLocationData({ state }, 'turn', null)
   assert.deepEqual(located, { kind: 'turn', turn: 1, key: FOLD_KIND, value: { files: state.files } })
