@@ -15,7 +15,7 @@ Files from this turn   report.md 📂   model.py 📂   chart.png 📂
 Each chip's name opens the file in the Harness right pane (the host's own
 `openFile` action); the 📂 icon reveals it in the system file manager.
 
-Current release: [v0.1.1](https://github.com/danchaw/dsh-reveal-in-folder/releases/tag/v0.1.1)
+Current release: [v0.1.2](https://github.com/danchaw/dsh-reveal-in-folder/releases/tag/v0.1.2)
 · changes in [CHANGELOG.md](CHANGELOG.md).
 
 ## Why a plugin?
@@ -79,7 +79,7 @@ dsh plugin --profile desktop add "github:danchaw/dsh-reveal-in-folder"
 dsh plugin --profile web add "github:danchaw/dsh-reveal-in-folder"
 ```
 
-Pin a release instead of the moving `main` branch by appending `#v0.1.1`.
+Pin a release instead of the moving `main` branch by appending `#v0.1.2`.
 
 You can also install from the **Plugins** page in the UI. A brand-new bundle is picked
 up live — the renderer fetches it as a new module revision, no restart needed.

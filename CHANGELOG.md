@@ -4,6 +4,17 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.1.2] - 2026-10-28
+
+### Changed
+
+- Documentation only — `lib/client.js` is byte-identical to 0.1.1. The install
+  section now names the profile each launcher boots (the desktop app reads
+  `--profile desktop`, not `--profile web`), which is the failure mode most users
+  hit; adds a troubleshooting section; and states the rule 0.1.1 introduced: a
+  tool result's path metadata alone is never treated as a produced file. Tagged so
+  the release artifact carries the same README as the repository page.
+
 ## [0.1.1] - 2026-10-28
 
 ### Fixed
@@ -26,5 +37,6 @@ adheres to [Semantic Versioning](https://semver.org/).
   document panel. The row stays hidden until the Host reports a usable file
   manager.
 
+[0.1.2]: https://github.com/danchaw/dsh-reveal-in-folder/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/danchaw/dsh-reveal-in-folder/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/danchaw/dsh-reveal-in-folder/releases/tag/v0.1.0

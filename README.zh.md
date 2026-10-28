@@ -13,7 +13,7 @@
 
 文件名本身可点击，用 Harness 右侧面板打开（走宿主自带的 `openFile`）；后面的文件夹图标负责在系统文件管理器里定位。
 
-当前版本：[v0.1.1](https://github.com/danchaw/dsh-reveal-in-folder/releases/tag/v0.1.1)
+当前版本：[v0.1.2](https://github.com/danchaw/dsh-reveal-in-folder/releases/tag/v0.1.2)
 · 变更记录见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 为什么要做这个插件
@@ -64,7 +64,7 @@ dsh plugin --profile desktop add "github:danchaw/dsh-reveal-in-folder"
 dsh plugin --profile web add "github:danchaw/dsh-reveal-in-folder"
 ```
 
-想固定版本而不是跟着 `main` 走，就在后面加 `#v0.1.1`。
+想固定版本而不是跟着 `main` 走，就在后面加 `#v0.1.2`。
 
 也可以在 UI 的「插件」页面里从 Git 安装。**全新安装**会被即时接上——渲染进程按新的模块 revision 取包，不用重启；
 但**替换已经加载过的版本**需要重启应用（或刷新页面）才会切到新的 module generation。

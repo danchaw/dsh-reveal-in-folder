@@ -1,6 +1,6 @@
 {
   "name": "dsh-reveal-in-folder",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "DSH plugin: a folder icon beside every file produced in a turn, which opens that file's containing folder in the system file manager",
   "keywords": [
     "dsh",
